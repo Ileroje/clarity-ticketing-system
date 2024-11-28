@@ -98,6 +98,34 @@
     ;; Returns the details of a specific ticket
     (ok (map-get? ticket-details ticket-id)))
 
+(define-read-only (get-ticket-metadata (ticket-id uint))
+;; Returns the metadata associated with a specific ticket (e.g., for batch issuance)
+(ok (map-get? batch-issuance-metadata ticket-id)))
+
+(define-read-only (get-ticket-cancelled-status (ticket-id uint))
+;; Returns true if the ticket has been canceled, false otherwise
+(ok (is-ticket-cancelled ticket-id)))
+
+(define-read-only (does-ticket-exist (ticket-id uint))
+;; Returns true if the specified ticket exists (i.e., has valid details and is not cancelled).
+(ok (is-eq (map-get? ticket-details ticket-id) none)))
+
+(define-read-only (get-ticket-transfer-history (ticket-id uint))
+;; Returns the transfer history for a specific ticket
+(ok (map-get? ticket-details ticket-id)))
+
+(define-read-only (is-ticket-canceled (ticket-id uint))
+;; Returns true if the ticket has been canceled, otherwise false
+(ok (is-ticket-cancelled ticket-id)))
+
+(define-read-only (get-total-tickets-count)
+;; Returns the total number of tickets issued so far
+(ok (+ (var-get last-ticket-id) u1)))
+
+(define-read-only (get-ticket-owner-history (ticket-id uint))
+;; Returns the owner history of a specific ticket, tracking its previous owners
+(ok (map-get? ticket-details ticket-id)))
+
 (define-read-only (get-owner (ticket-id uint))
     ;; Returns the owner of a specific ticket
     (ok (nft-get-owner? event-ticket ticket-id)))
