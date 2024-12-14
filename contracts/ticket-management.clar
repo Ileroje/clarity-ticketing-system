@@ -41,6 +41,11 @@
     ;; Validate the ticket info to ensure it contains at least one character
     (>= (len ticket-info) u1))
 
+(define-private (is-valid-ticket-id (ticket-id uint))
+;; Returns true if the ticket exists in `ticket-details` and is not canceled.
+(and (not (is-eq (map-get? ticket-details ticket-id) none))
+     (not (is-ticket-cancelled ticket-id))))
+
 (define-private (issue-ticket (ticket-info (string-ascii 128)))
     ;; Issues a new ticket by minting an NFT, storing the ticket info, and updating the last ticket ID
     (let ((ticket-id (+ (var-get last-ticket-id) u1)))
@@ -137,6 +142,38 @@
 (define-read-only (is-cancelled (ticket-id uint))
     ;; Checks if a specific ticket has been canceled
     (ok (is-ticket-cancelled ticket-id)))
+   
+(define-read-only (ticket-exists? (ticket-id uint))
+;; Returns true if the ticket exists in the ticket-details map, false otherwise
+(ok (is-eq (map-get? ticket-details ticket-id) none)))
+
+(define-read-only (is-ticket-canceled? (ticket-id uint))
+;; Returns true if the ticket has been canceled, false otherwise
+(ok (is-ticket-cancelled ticket-id)))
+
+(define-read-only (is-admin? (sender principal))
+;; Returns true if the sender is the admin
+(ok (is-eq sender admin)))
+
+(define-read-only (get-ticket-details (ticket-id uint))
+;; Returns the details of a specific ticket
+(ok (map-get? ticket-details ticket-id)))
+
+(define-read-only (get-admin-status (sender principal))
+;; Returns true if the provided sender is the admin.
+(ok (is-eq sender admin)))
+
+(define-read-only (is-ticket-issued? (ticket-id uint))
+;; Returns true if the ticket is already issued (exists in ticket-details)
+(ok (is-eq (map-get? ticket-details ticket-id) none)))
+
+(define-read-only (count-issued-tickets)
+;; Returns the total number of tickets issued
+(ok (var-get last-ticket-id)))
+
+(define-read-only (get-batch-metadata (batch-id uint))
+;; Returns the metadata for a specific batch issuance
+(ok (map-get? batch-issuance-metadata batch-id)))
 
 ;; Contract Initialization
 (begin
